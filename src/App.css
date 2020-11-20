@@ -1,38 +1,72 @@
+:root {
+  background-color: #282c34;
+  color: white;
+  --num-columns: 0;
+  --num-rows: 0;
+}
+
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+header {
+  min-height: 10vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
 }
 
 .App-link {
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Do not affect margin! It well mess up the downloaded image! */
+.grid {
+  display: inline-grid;
+  grid-template-columns: repeat(var(--num-columns), auto);
+  width: 90vw;
+  height: calc((90vw / var(--num-columns)) * var(--num-rows));
+}
+
+.cell-item {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: all 0.2s ease-in-out;
+}
+
+.cell-item:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+.modal-backdrop {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.modal-holder {
+  position: fixed;
+  background-color: white;
+  border-radius: 9px;
+  top: 50vh;
+  left: 50vw;
+  --modal-width: 80%;
+  --modal-height: 40vh;
+  margin-top: calc(var(--modal-height) / 2 * -1);
+  margin-left: calc(var(--modal-width) / 2 * -1);
+  width: var(--modal-width);
+  height: var(--modal-height);
+}
+
+.modal {
+  color: black;
+  width: auto;
+  height: auto;
+  margin: 1rem;
 }
