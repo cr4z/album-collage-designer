@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button, TextField, ThemeProvider } from "@material-ui/core";
 import { ModalTheme } from "../themes/modal";
+import { search } from "../functions/genius";
 
 interface IModalContext {
   setModalOpen: Function;
@@ -12,6 +13,7 @@ export const ModalContext = createContext<IModalContext | null>(null);
 
 const ModalContextProvider = (props: any) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [input, setInput] = useState<string>("");
 
   const state = {
     setModalOpen: setModalOpen,
@@ -41,9 +43,9 @@ const ModalContextProvider = (props: any) => {
                   placeholder="Search for an artist or album..."
                   variant="outlined"
                   size="small"
+                  onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      console.log("asdf");
                       const btn = submitBtnRef.current;
                       if (btn) {
                         btn.click();
@@ -59,6 +61,7 @@ const ModalContextProvider = (props: any) => {
                     disableElevation={true}
                     size="large"
                     ref={submitBtnRef}
+                    onClick={(e) => search(input)}
                   >
                     Search
                   </Button>

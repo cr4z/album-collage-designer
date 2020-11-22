@@ -30,6 +30,10 @@ header {
 }
 
 .modal-ex-btn {
+  position: absolute;
+  right: 0px;
+  padding: 1rem;
+
   -webkit-transition: -webkit-transform 0.4s ease;
   transition: transform 0.4s ease;
 }
@@ -44,8 +48,8 @@ header {
   margin-bottom: 1rem;
   display: inline-grid;
   grid-template-columns: repeat(var(--num-columns), auto);
-  width: 90vw;
-  height: calc((90vw / var(--num-columns)) * var(--num-rows));
+  width: 85vw;
+  height: calc((85vw / var(--num-columns)) * var(--num-rows));
 }
 
 .cell-item {
@@ -56,6 +60,7 @@ header {
 }
 
 .cell-item:hover {
+  z-index: 1;
   transform: scale(1.1);
   cursor: pointer;
 }
@@ -64,7 +69,7 @@ header {
   position: fixed;
   width: 100vw;
   height: 100vh;
-  z-index: 1;
+  z-index: 9999;
   background-color: rgba(0, 0, 0, 0.3);
 }
 

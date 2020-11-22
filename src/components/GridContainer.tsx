@@ -37,7 +37,7 @@ export function GridContainer() {
       </div>
 
       <Grid
-        setOfficialImages={setOfficialImages}
+        setOfficialImagesCb={setOfficialImages}
         gridValues={{ numColumns: numColumns, numRows: numRows }}
         gridState={{ gridIsLoading, setGridIsLoading }}
       />
@@ -45,7 +45,7 @@ export function GridContainer() {
       <br />
       <div className="grid-download-btn">
         <Button
-        color="primary"
+          color="primary"
           size="large"
           disabled={gridIsLoading}
           onClick={() => {
@@ -82,7 +82,7 @@ const downloadButtonHandler = async (
 const Grid = (props: {
   gridValues: { numColumns: number; numRows: number };
   gridState: { gridIsLoading: any; setGridIsLoading: Function };
-  setOfficialImages: Function;
+  setOfficialImagesCb: Function;
 }) => {
   const { numColumns, numRows } = props.gridValues;
   const total = numColumns * numRows;
@@ -115,9 +115,8 @@ const Grid = (props: {
       });
 
       //finally, set grid state to not loading
+      props.setOfficialImagesCb(images);
       setGridIsLoading(false);
-
-      props.setOfficialImages(images);
     });
   }, [numColumns, numRows]);
 
