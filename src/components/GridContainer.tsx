@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ModalContext } from "../contexts/ModalContext";
+import { ModalContext } from "../contexts/Modal";
 import { stripImages, waitForImagesToLoad } from "../functions/imgProcessing";
 import { generateCanvas } from "../functions/canvasGenerator";
 import { downloadCanvas } from "../functions/downloader";
+import { Button, TextField } from "@material-ui/core";
 
 export function GridContainer() {
   const ctx = useContext(ModalContext);
@@ -12,19 +13,28 @@ export function GridContainer() {
   const [numRows, setNumRows] = useState<number>(5);
   const [gridIsLoading, setGridIsLoading] = useState<boolean>(false);
 
-  const setModalOpen = ctx.setModalOpen;
-
   const [officialImages, setOfficialImages] = useState<HTMLImageElement[]>([]);
 
   return (
     <>
-      <span>
-        Columns: <input onChange={(e) => setNumColumns(+e.target.value)} />{" "}
-      </span>
-      <span>
-        Rows: <input onChange={(e) => setNumRows(+e.target.value)} />{" "}
-      </span>
-      <br />
+      <div className="grid-text-fields">
+        <span>
+          <TextField
+            label="Columns"
+            defaultValue="10"
+            variant="outlined"
+            onChange={(e) => setNumColumns(+e.target.value)}
+          />{" "}
+        </span>
+        <span>
+          <TextField
+            label="Rows"
+            defaultValue="5"
+            variant="outlined"
+            onChange={(e) => setNumRows(+e.target.value)}
+          />{" "}
+        </span>
+      </div>
 
       <Grid
         setOfficialImages={setOfficialImages}
@@ -33,17 +43,21 @@ export function GridContainer() {
       />
 
       <br />
-      <button
-        disabled={gridIsLoading}
-        onClick={() => {
-          downloadButtonHandler(officialImages, {
-            numColumns: numColumns,
-            numRows: numRows,
-          });
-        }}
-      >
-        Download!
-      </button>
+      <div className="grid-download-btn">
+        <Button
+        color="primary"
+          size="large"
+          disabled={gridIsLoading}
+          onClick={() => {
+            downloadButtonHandler(officialImages, {
+              numColumns: numColumns,
+              numRows: numRows,
+            });
+          }}
+        >
+          Download!
+        </Button>
+      </div>
     </>
   );
 }

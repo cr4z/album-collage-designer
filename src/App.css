@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap");
+
 :root {
   background-color: #282c34;
   color: white;
@@ -7,6 +9,7 @@
 
 .App {
   text-align: center;
+  font-family: "Noto Sans", sans-serif;
 }
 
 header {
@@ -22,8 +25,23 @@ header {
   color: #61dafb;
 }
 
-/* Do not affect margin! It well mess up the downloaded image! */
+.grid-download-btn {
+  margin-bottom: 2rem;
+}
+
+.modal-ex-btn {
+  -webkit-transition: -webkit-transform 0.4s ease;
+  transition: transform 0.4s ease;
+}
+.modal-ex-btn:hover {
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+  cursor: pointer;
+}
+
 .grid {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   display: inline-grid;
   grid-template-columns: repeat(var(--num-columns), auto);
   width: 90vw;
@@ -56,17 +74,44 @@ header {
   border-radius: 9px;
   top: 50vh;
   left: 50vw;
-  --modal-width: 80%;
-  --modal-height: 40vh;
-  margin-top: calc(var(--modal-height) / 2 * -1);
-  margin-left: calc(var(--modal-width) / 2 * -1);
-  width: var(--modal-width);
-  height: var(--modal-height);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vw;
+  height: auto;
+  overflow: hidden;
+
+  transition: all ease;
 }
 
 .modal {
   color: black;
   width: auto;
   height: auto;
-  margin: 1rem;
+  --modal-margin: 1rem;
+  margin: var(--modal-margin);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: large;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -0.3rem;
+  margin-bottom: -0.3rem;
+}
+
+.modal-divider {
+  width: calc(100% + (var(--modal-margin) * 2));
+  border: 1px solid #ddd;
+  margin-bottom: 0.7rem;
+  margin-top: 0.7rem;
+  margin-left: calc(var(--modal-margin) * -1);
+  display: inline-block;
 }

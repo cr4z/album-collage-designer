@@ -1,15 +1,19 @@
 import React from "react";
-import { GridContainer } from "./components/Collage";
+import { GridContainer } from "./components/GridContainer";
 import "./App.css";
-import ModalContextProvider from "./contexts/ModalContext";
+import ModalContextProvider from "./contexts/Modal";
+import { ThemeProvider } from "@material-ui/core";
+import { GlobalTheme } from "./themes/global";
 
 function App() {
   return (
     <div className="App">
-      <ModalContextProvider>
-        <header>Album Collage Designer</header>
-        <GridContainer />
-      </ModalContextProvider>
+      <ThemeProvider theme={GlobalTheme}>
+        <ModalContextProvider>
+          <header>🎨Album Collage Designer🖌️</header>
+          <GridContainer />
+        </ModalContextProvider>
+      </ThemeProvider>
     </div>
   );
 }
