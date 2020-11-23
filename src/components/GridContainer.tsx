@@ -24,7 +24,7 @@ export function GridContainer() {
             defaultValue="10"
             variant="outlined"
             onChange={(e) => setNumColumns(+e.target.value)}
-          />{" "}
+          />
         </span>
         <span>
           <TextField
@@ -32,7 +32,7 @@ export function GridContainer() {
             defaultValue="5"
             variant="outlined"
             onChange={(e) => setNumRows(+e.target.value)}
-          />{" "}
+          />
         </span>
       </div>
 
@@ -128,14 +128,16 @@ const Grid = (props: {
 };
 
 function CellItem(props: { src: string }) {
-  const x = useContext(ModalContext);
+  const context = useContext(ModalContext);
   return (
     <img
       className="cell-item"
       src={props.src}
       alt="album cover"
       onClick={() => {
-        x?.setModalOpen(true);
+        if (context) {
+          context.openModal(receiveData);
+        } //error check this mf
       }}
     ></img>
   );
@@ -147,3 +149,6 @@ const setCssProps = (gridValues: { numColumns: number; numRows: number }) => {
   css.setProperty("--num-columns", numColumns.toString());
   css.setProperty("--num-rows", numRows.toString());
 };
+
+function receiveData() {
+}

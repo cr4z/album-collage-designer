@@ -1,12 +1,12 @@
-import React, { createContext, useRef, useState } from "react";
+import React, { createContext, useCallback, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button, TextField, ThemeProvider } from "@material-ui/core";
 import { ModalTheme } from "../themes/modal";
-import { search } from "../functions/genius";
+import * as genius from "../functions/genius";
 
 interface IModalContext {
-  setModalOpen: Function;
+  openModal: Function;
 }
 
 export const ModalContext = createContext<IModalContext | null>(null);
@@ -14,15 +14,25 @@ export const ModalContext = createContext<IModalContext | null>(null);
 const ModalContextProvider = (props: any) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
+  const [gridCallback, setGridCallback] = useState<Function | null>(null);
 
-  const state = {
-    setModalOpen: setModalOpen,
-  };
+  const [sources, setSources] = useState<string[]>([]);
+
+  const onImagesReturned = useCallback((results: string[]) => {
+    setSources(results);
+  }, []);
 
   const submitBtnRef = useRef<HTMLButtonElement | null>(null);
 
+  const ctx = {
+    openModal: (inputCallback: Function) => {
+      setModalOpen(true);
+      setGridCallback(() => inputCallback);
+    },
+  };
+
   return (
-    <ModalContext.Provider value={{ ...state }}>
+    <ModalContext.Provider value={{ ...ctx }}>
       {modalOpen && (
         <ThemeProvider theme={ModalTheme}>
           <div className="modal-backdrop">
@@ -54,6 +64,14 @@ const ModalContextProvider = (props: any) => {
                   }}
                 />
 
+                {sources.length > 0 && (
+                  <div className="modal-grid">
+                    {sources.map((source) => {
+                      return <ModalItem src={source} />;
+                    })}
+                  </div>
+                )}
+
                 <div className="modal-divider" />
                 <div className="modal-footer">
                   <Button
@@ -61,7 +79,9 @@ const ModalContextProvider = (props: any) => {
                     disableElevation={true}
                     size="large"
                     ref={submitBtnRef}
-                    onClick={(e) => search(input)}
+                    onClick={async () =>
+                      genius.getImagesFromInput(input, onImagesReturned)
+                    }
                   >
                     Search
                   </Button>
@@ -75,5 +95,11 @@ const ModalContextProvider = (props: any) => {
     </ModalContext.Provider>
   );
 };
+
+function ModalItem(props: { src: string }) {
+  return (
+    <img width={100} height={100} src={props.src} alt="album suggestion" />
+  );
+}
 
 export default ModalContextProvider;
