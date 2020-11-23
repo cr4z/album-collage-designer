@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ModalContext } from "../contexts/Modal";
 import { stripImages, waitForImagesToLoad } from "../functions/imgProcessing";
 import { generateCanvas } from "../functions/canvasGenerator";
@@ -17,23 +17,23 @@ export function GridContainer() {
 
   return (
     <>
-      <div className="grid-text-fields">
-        <span>
+      <div className="grid-text-field-container">
+        <div className="text-field">
           <TextField
             label="Columns"
             defaultValue="10"
             variant="outlined"
             onChange={(e) => setNumColumns(+e.target.value)}
           />
-        </span>
-        <span>
+        </div>
+        <div className="text-field">
           <TextField
             label="Rows"
             defaultValue="5"
             variant="outlined"
             onChange={(e) => setNumRows(+e.target.value)}
           />
-        </span>
+        </div>
       </div>
 
       <Grid
@@ -111,7 +111,7 @@ const Grid = (props: {
       //generate array of cellitems
       cellItems.length = 0;
       images.forEach((image) => {
-        cellItems.push(<CellItem src={image.src} />);
+        cellItems.push(<CellItem initialSource={image.src} />);
       });
 
       //finally, set grid state to not loading
@@ -127,16 +127,24 @@ const Grid = (props: {
   );
 };
 
-function CellItem(props: { src: string }) {
+function CellItem(props: { initialSource: string }) {
   const context = useContext(ModalContext);
+
+  const [src, setSrc] = useState<string>(props.initialSource);
+
+  const onImageReceieved = useCallback((newSource: string) => {
+    console.log(newSource);
+    setSrc(newSource);
+  }, []);
+
   return (
     <img
       className="cell-item"
-      src={props.src}
+      src={src}
       alt="album cover"
       onClick={() => {
         if (context) {
-          context.openModal(receiveData);
+          context.openModal(() => onImageReceieved);
         } //error check this mf
       }}
     ></img>
@@ -149,6 +157,3 @@ const setCssProps = (gridValues: { numColumns: number; numRows: number }) => {
   css.setProperty("--num-columns", numColumns.toString());
   css.setProperty("--num-rows", numRows.toString());
 };
-
-function receiveData() {
-}

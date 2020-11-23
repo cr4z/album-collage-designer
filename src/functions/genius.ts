@@ -2,7 +2,7 @@ export const getImagesFromInput = async (input: string, callback: Function) => {
   const encodedInput = encodeURIComponent(input);
 
   const response = await fetch(
-    `https://genius.p.rapidapi.com/search?q=${encodedInput}&per_page=30`,
+    `https://genius.p.rapidapi.com/search?q=${encodedInput}&per_page=50`,
     {
       method: "GET",
       headers: {

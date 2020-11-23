@@ -1,7 +1,13 @@
-import React, { createContext, useCallback, useRef, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Button, TextField, ThemeProvider } from "@material-ui/core";
+import { Button, Grid, TextField, ThemeProvider } from "@material-ui/core";
 import { ModalTheme } from "../themes/modal";
 import * as genius from "../functions/genius";
 
@@ -27,9 +33,43 @@ const ModalContextProvider = (props: any) => {
   const ctx = {
     openModal: (inputCallback: Function) => {
       setModalOpen(true);
-      setGridCallback(() => inputCallback);
+      setGridCallback((x: string) => inputCallback(x));
     },
   };
+
+  const onImageSelected = useCallback(
+    (src: string) => {
+      if (gridCallback) {
+        console.log(gridCallback);
+
+        gridCallback(src);
+        setModalOpen(false);
+      } else {
+        throw new Error("Callback doesn't exist!");
+      }
+    },
+    [gridCallback]
+  );
+
+  const [pageInView, setPageInView] = useState<number>(0);
+  const resultsPerPage = 6;
+  const offset = pageInView * resultsPerPage;
+  const results: JSX.Element[] = [];
+  for (let i = 0; i < resultsPerPage; i++) {
+    if (sources[i + offset]) {
+      results.push(
+        <Result src={sources[i + offset]} onImageSelected={onImageSelected} />
+      );
+    }
+  }
+
+  const prevPage = useCallback(() => {
+    setPageInView(pageInView - 1);
+  }, [pageInView]);
+
+  const nextPage = useCallback(() => {
+    setPageInView(pageInView + 1);
+  }, [pageInView]);
 
   return (
     <ModalContext.Provider value={{ ...ctx }}>
@@ -48,40 +88,55 @@ const ModalContextProvider = (props: any) => {
                 </div>
                 <div className="modal-divider" />
 
-                <TextField
-                  fullWidth
-                  placeholder="Search for an artist or album..."
-                  variant="outlined"
-                  size="small"
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      const btn = submitBtnRef.current;
-                      if (btn) {
-                        btn.click();
-                      } else throw new Error("Submit button doesn't exist!");
-                    }
-                  }}
-                />
+                <div className="modal-search-bar">
+                  <TextField
+                    fullWidth
+                    placeholder="Search for an artist or album..."
+                    variant="outlined"
+                    size="small"
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        const btn = submitBtnRef.current;
+                        if (btn) {
+                          btn.click();
+                        } else throw new Error("Submit button doesn't exist!");
+                      }
+                    }}
+                  />
+                </div>
 
                 {sources.length > 0 && (
-                  <div className="modal-grid">
-                    {sources.map((source) => {
-                      return <ModalItem src={source} />;
-                    })}
-                  </div>
+                  <div className="modal-grid">{results}</div>
                 )}
+
+                <div className="modal-button-container">
+                  <div>
+                    <Button disabled={pageInView < 1} onClick={prevPage}>
+                      👈
+                    </Button>
+                  </div>
+                  <div>
+                    <Button
+                      disabled={results.length < resultsPerPage}
+                      onClick={nextPage}
+                    >
+                      👉
+                    </Button>
+                  </div>
+                </div>
 
                 <div className="modal-divider" />
                 <div className="modal-footer">
                   <Button
                     variant="contained"
+                    color="primary"
                     disableElevation={true}
-                    size="large"
                     ref={submitBtnRef}
-                    onClick={async () =>
-                      genius.getImagesFromInput(input, onImagesReturned)
-                    }
+                    onClick={async () => {
+                      genius.getImagesFromInput(input, onImagesReturned);
+                      setPageInView(0);
+                    }}
                   >
                     Search
                   </Button>
@@ -96,9 +151,17 @@ const ModalContextProvider = (props: any) => {
   );
 };
 
-function ModalItem(props: { src: string }) {
+function Result(props: { src: string; onImageSelected: Function }) {
   return (
-    <img width={100} height={100} src={props.src} alt="album suggestion" />
+    <div className="modal-grid-result">
+      <img
+        onClick={() => props.onImageSelected(props.src)}
+        width={200}
+        height={200}
+        src={props.src}
+        alt="result"
+      />
+    </div>
   );
 }
 
