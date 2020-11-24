@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ModalContext } from "../contexts/Modal";
 import { stripImages, waitForImagesToLoad } from "../functions/imgProcessing";
 import { generateCanvas } from "../functions/canvasGenerator";
@@ -14,16 +20,23 @@ export function GridContainer() {
   const [gridIsLoading, setGridIsLoading] = useState<boolean>(false);
 
   const [officialImages, setOfficialImages] = useState<HTMLImageElement[]>([]);
+  const officialImagesRef = useRef<HTMLImageElement[]>();
+  officialImagesRef.current = officialImages;
 
   const onGridInitialized = useCallback((initialImages: HTMLImageElement[]) => {
-    setOfficialImages([]);
-    setOfficialImages(initialImages);
+    setOfficialImages([...initialImages]);
   }, []);
 
   const onItemSet = useCallback((index: number, newSrc: string) => {
-    //set the official image
-    console.log("setting image");
-    officialImages[index].src = newSrc;
+    const old = officialImagesRef.current;
+
+    if (old) {
+      const newImages = [...old];
+      newImages[index].src = newSrc;
+
+      //set the official image
+      setOfficialImages(newImages);
+    } else throw new Error("Ref was not assigned!");
   }, []);
 
   return (
@@ -79,9 +92,6 @@ const downloadButtonHandler = async (
   gridValues: { numColumns: number; numRows: number }
 ) => {
   const { numColumns, numRows } = gridValues;
-
-  images = await waitForImagesToLoad(images);
-  images = stripImages(images);
 
   const canvas = await generateCanvas(images, {
     numColumns: numColumns,

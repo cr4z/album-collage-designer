@@ -1,9 +1,15 @@
-import { waitForImagesToLoad } from "./imgProcessing";
+import { stripImages, waitForImagesToLoad } from "./imgProcessing";
 
 export const generateCanvas = async (
   images: HTMLImageElement[],
   gridValues: { numColumns: number; numRows: number }
 ): Promise<HTMLCanvasElement> => {
+  alert(1);
+  images = stripImages(images);
+
+  alert(2);
+  images = await waitForImagesToLoad(images);
+
   const { numColumns, numRows } = gridValues;
 
   const numExtents = Math.max(numColumns, numRows);
@@ -13,7 +19,7 @@ export const generateCanvas = async (
   canvas.height = imageSize * numRows;
   const ctx = canvas.getContext("2d");
 
-  await waitForImagesToLoad(images);
+  alert("successfully loaded images");
 
   if (ctx) {
     let total: number = -1;
