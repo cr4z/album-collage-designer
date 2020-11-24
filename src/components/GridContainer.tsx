@@ -15,6 +15,17 @@ export function GridContainer() {
 
   const [officialImages, setOfficialImages] = useState<HTMLImageElement[]>([]);
 
+  const onGridInitialized = useCallback((initialImages: HTMLImageElement[]) => {
+    setOfficialImages(initialImages);
+    console.log(officialImages);
+  }, []);
+
+  const onItemSet = useCallback((index: number, newSrc: string) => {
+    //set the official image
+
+    officialImages[index].src = newSrc;
+  }, []);
+
   return (
     <>
       <div className="grid-text-field-container">
@@ -37,9 +48,10 @@ export function GridContainer() {
       </div>
 
       <Grid
-        setOfficialImagesCb={setOfficialImages}
+        onGridInitialized={onGridInitialized}
         gridValues={{ numColumns: numColumns, numRows: numRows }}
         gridState={{ gridIsLoading, setGridIsLoading }}
+        onItemSet={(index: number, newSrc: string) => onItemSet(index, newSrc)}
       />
 
       <br />
@@ -82,7 +94,8 @@ const downloadButtonHandler = async (
 const Grid = (props: {
   gridValues: { numColumns: number; numRows: number };
   gridState: { gridIsLoading: any; setGridIsLoading: Function };
-  setOfficialImagesCb: Function;
+  onGridInitialized: Function;
+  onItemSet: Function;
 }) => {
   const { numColumns, numRows } = props.gridValues;
   const total = numColumns * numRows;
@@ -110,12 +123,22 @@ const Grid = (props: {
     waitForImagesToLoad(images).then(() => {
       //generate array of cellitems
       cellItems.length = 0;
+      let i: number = -1;
       images.forEach((image) => {
-        cellItems.push(<CellItem initialSource={image.src} />);
+        i++;
+        cellItems.push(
+          <CellItem
+            initialSource={image.src}
+            index={i}
+            onItemSet={(index: number, newSrc: string) =>
+              props.onItemSet(index, newSrc)
+            }
+          />
+        );
       });
 
       //finally, set grid state to not loading
-      props.setOfficialImagesCb(images);
+      props.onGridInitialized(images);
       setGridIsLoading(false);
     });
   }, [numColumns, numRows]);
@@ -127,14 +150,18 @@ const Grid = (props: {
   );
 };
 
-function CellItem(props: { initialSource: string }) {
+function CellItem(props: {
+  initialSource: string;
+  index: number;
+  onItemSet: Function;
+}) {
   const context = useContext(ModalContext);
 
   const [src, setSrc] = useState<string>(props.initialSource);
 
   const onImageReceieved = useCallback((newSource: string) => {
-    console.log(newSource);
     setSrc(newSource);
+    props.onItemSet(props.index, newSource);
   }, []);
 
   return (
@@ -145,7 +172,7 @@ function CellItem(props: { initialSource: string }) {
       onClick={() => {
         if (context) {
           context.openModal(() => onImageReceieved);
-        } //error check this mf
+        }
       }}
     ></img>
   );

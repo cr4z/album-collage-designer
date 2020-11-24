@@ -40,8 +40,6 @@ const ModalContextProvider = (props: any) => {
   const onImageSelected = useCallback(
     (src: string) => {
       if (gridCallback) {
-        console.log(gridCallback);
-
         gridCallback(src);
         setModalOpen(false);
       } else {
