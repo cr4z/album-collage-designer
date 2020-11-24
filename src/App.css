@@ -25,8 +25,15 @@ header {
   color: #61dafb;
 }
 
-.grid-download-btn {
-  margin-bottom: 2rem;
+.download-container {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.download-progress-spinner {
+  position: absolute;
+  margin-left: -13rem;
 }
 
 .modal-ex-btn {

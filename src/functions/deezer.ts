@@ -1,7 +1,6 @@
 export const getImagesFromInput = async (input: string, callback: Function) => {
   const encodedInput = encodeURIComponent(input);
 
-  //you can add autocomplete!
   const response = await fetch(
     `https://cors-anywhere.herokuapp.com/https://api.deezer.com/search?q=${encodedInput}`,
     {

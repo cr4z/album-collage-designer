@@ -1,15 +1,14 @@
-import React, {
-  createContext,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Button, Grid, TextField, ThemeProvider } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  TextField,
+  ThemeProvider,
+} from "@material-ui/core";
 import { ModalTheme } from "../themes/modal";
-import * as genius from "../functions/genius";
+import * as deezer from "../functions/deezer";
 
 interface IModalContext {
   openModal: Function;
@@ -21,11 +20,13 @@ const ModalContextProvider = (props: any) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
   const [gridCallback, setGridCallback] = useState<Function | null>(null);
-
+  const [loadingResults, setLoadingResults] = useState<boolean>(false);
   const [sources, setSources] = useState<string[]>([]);
+  const [welcomeMessage, setWelcomeMessage] = useState<string>("");
 
   const onImagesReturned = useCallback((results: string[]) => {
     setSources(results);
+    setLoadingResults(false);
   }, []);
 
   const submitBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -104,8 +105,12 @@ const ModalContextProvider = (props: any) => {
                   />
                 </div>
 
-                {sources.length > 0 && (
+                {sources.length > 0 ? (
                   <div className="modal-grid">{results}</div>
+                ) : loadingResults ? (
+                  <CircularProgress />
+                ) : (
+                  <span>{welcomeMessage}</span>
                 )}
 
                 <div className="modal-button-container">
@@ -132,7 +137,9 @@ const ModalContextProvider = (props: any) => {
                     disableElevation={true}
                     ref={submitBtnRef}
                     onClick={async () => {
-                      genius.getImagesFromInput(input, onImagesReturned);
+                      setWelcomeMessage("Hm, nothing found :(");
+                      setLoadingResults(true);
+                      deezer.getImagesFromInput(input, onImagesReturned);
                       setPageInView(0);
                     }}
                   >

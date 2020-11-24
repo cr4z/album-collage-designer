@@ -9,7 +9,7 @@ import { ModalContext } from "../contexts/Modal";
 import { stripImages, waitForImagesToLoad } from "../functions/imgProcessing";
 import { generateCanvas } from "../functions/canvasGenerator";
 import { downloadCanvas } from "../functions/downloader";
-import { Button, TextField } from "@material-ui/core";
+import { Button, CircularProgress, Grid, TextField } from "@material-ui/core";
 
 export function GridContainer() {
   const ctx = useContext(ModalContext);
@@ -18,6 +18,8 @@ export function GridContainer() {
   const [numColumns, setNumColumns] = useState<number>(10);
   const [numRows, setNumRows] = useState<number>(5);
   const [gridIsLoading, setGridIsLoading] = useState<boolean>(false);
+
+  const [downloadInProgress, setDownloadInProgress] = useState<boolean>(false);
 
   const [officialImages, setOfficialImages] = useState<HTMLImageElement[]>([]);
   const officialImagesRef = useRef<HTMLImageElement[]>();
@@ -60,7 +62,7 @@ export function GridContainer() {
         </div>
       </div>
 
-      <Grid
+      <GridGen
         onGridInitialized={onGridInitialized}
         gridValues={{ numColumns: numColumns, numRows: numRows }}
         gridState={{ gridIsLoading, setGridIsLoading }}
@@ -68,20 +70,30 @@ export function GridContainer() {
       />
 
       <br />
-      <div className="grid-download-btn">
-        <Button
-          color="primary"
-          size="large"
-          disabled={gridIsLoading}
-          onClick={() => {
-            downloadButtonHandler(officialImages, {
-              numColumns: numColumns,
-              numRows: numRows,
-            });
-          }}
-        >
-          Download!
-        </Button>
+      <div className="download-container">
+        <div>
+          <Button
+            color="primary"
+            size="large"
+            disabled={gridIsLoading || downloadInProgress}
+            onClick={() => {
+              downloadButtonHandler(
+                officialImages,
+                {
+                  numColumns: numColumns,
+                  numRows: numRows,
+                },
+                setDownloadInProgress
+              );
+            }}
+          >
+            Download!
+          </Button>
+        </div>
+
+        <div className="download-progress-spinner">
+          {downloadInProgress && <CircularProgress />}
+        </div>
       </div>
     </>
   );
@@ -89,8 +101,11 @@ export function GridContainer() {
 
 const downloadButtonHandler = async (
   images: HTMLImageElement[],
-  gridValues: { numColumns: number; numRows: number }
+  gridValues: { numColumns: number; numRows: number },
+  setDownloadInProgress: Function
 ) => {
+  setDownloadInProgress(true);
+
   const { numColumns, numRows } = gridValues;
 
   const canvas = await generateCanvas(images, {
@@ -99,9 +114,11 @@ const downloadButtonHandler = async (
   });
 
   downloadCanvas(canvas);
+
+  setDownloadInProgress(false);
 };
 
-const Grid = (props: {
+const GridGen = (props: {
   gridValues: { numColumns: number; numRows: number };
   gridState: { gridIsLoading: any; setGridIsLoading: Function };
   onGridInitialized: Function;
@@ -163,7 +180,7 @@ const Grid = (props: {
   }, [numColumns, numRows]);
 
   return gridState.gridIsLoading ? (
-    <div>Loading...</div>
+    <CircularProgress color="secondary" style={{ margin: 100 }} />
   ) : (
     <div className="grid">{cellItems}</div>
   );

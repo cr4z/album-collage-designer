@@ -4,10 +4,8 @@ export const generateCanvas = async (
   images: HTMLImageElement[],
   gridValues: { numColumns: number; numRows: number }
 ): Promise<HTMLCanvasElement> => {
-  alert(1);
   images = stripImages(images);
 
-  alert(2);
   images = await waitForImagesToLoad(images);
 
   const { numColumns, numRows } = gridValues;
@@ -18,8 +16,6 @@ export const generateCanvas = async (
   canvas.width = imageSize * numColumns;
   canvas.height = imageSize * numRows;
   const ctx = canvas.getContext("2d");
-
-  alert("successfully loaded images");
 
   if (ctx) {
     let total: number = -1;
