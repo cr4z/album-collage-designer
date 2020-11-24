@@ -16,13 +16,13 @@ export function GridContainer() {
   const [officialImages, setOfficialImages] = useState<HTMLImageElement[]>([]);
 
   const onGridInitialized = useCallback((initialImages: HTMLImageElement[]) => {
+    setOfficialImages([]);
     setOfficialImages(initialImages);
-    console.log(officialImages);
   }, []);
 
   const onItemSet = useCallback((index: number, newSrc: string) => {
     //set the official image
-
+    console.log("setting image");
     officialImages[index].src = newSrc;
   }, []);
 
@@ -97,36 +97,41 @@ const Grid = (props: {
   onGridInitialized: Function;
   onItemSet: Function;
 }) => {
+  const { gridState } = props;
   const { numColumns, numRows } = props.gridValues;
   const total = numColumns * numRows;
 
-  const { gridIsLoading, setGridIsLoading } = props.gridState;
-
-  const [images] = useState<HTMLImageElement[]>([]);
-  const [cellItems] = useState<JSX.Element[]>([]);
+  const [images, setImages] = useState<HTMLImageElement[]>([]);
+  const [cellItems, setCellItems] = useState<JSX.Element[]>([]);
 
   useEffect(() => {
-    setGridIsLoading(true);
+    gridState.setGridIsLoading(true);
 
-    //generate array of images
-    images.length = 0;
+    //generate new array of images
+    const newImages: HTMLImageElement[] = [];
     for (let i = 0; i < total; i++) {
-      const img = new Image();
-      img.src = `https://picsum.photos/seed/${Math.random()}/1000`;
-      images.push(img);
+      const newImg = new Image();
+      newImg.src = `https://picsum.photos/seed/${Math.random()}/1000`;
+      newImages.push(newImg);
     }
+
+    //set images to new array
+    setImages(newImages);
 
     //init css
     setCssProps({ numColumns: numColumns, numRows: numRows });
 
     //wait for image array to load
-    waitForImagesToLoad(images).then(() => {
-      //generate array of cellitems
-      cellItems.length = 0;
+    waitForImagesToLoad(newImages).then(() => {
+      //generate new array of cellitems
+
+      const newCellItems: JSX.Element[] = [];
       let i: number = -1;
-      images.forEach((image) => {
+
+      newImages.forEach((image) => {
         i++;
-        cellItems.push(
+
+        const newItem = (
           <CellItem
             initialSource={image.src}
             index={i}
@@ -135,15 +140,19 @@ const Grid = (props: {
             }
           />
         );
+
+        newCellItems.push(newItem);
       });
 
+      setCellItems(newCellItems);
+
       //finally, set grid state to not loading
-      props.onGridInitialized(images);
-      setGridIsLoading(false);
+      props.onGridInitialized(newImages);
+      gridState.setGridIsLoading(false);
     });
   }, [numColumns, numRows]);
 
-  return gridIsLoading ? (
+  return gridState.gridIsLoading ? (
     <div>Loading...</div>
   ) : (
     <div className="grid">{cellItems}</div>
