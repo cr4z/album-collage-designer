@@ -11,7 +11,7 @@ export const generateCanvas = async (
   const { numColumns, numRows } = gridValues;
 
   const numExtents = Math.max(numColumns, numRows);
-  const imageSize = 2000 / numExtents;
+  const imageSize = 3000 / numExtents;
   const canvas = document.createElement("canvas");
   canvas.width = imageSize * numColumns;
   canvas.height = imageSize * numRows;

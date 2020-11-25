@@ -8,7 +8,7 @@ import {
   ThemeProvider,
 } from "@material-ui/core";
 import { ModalTheme } from "../themes/modal";
-import * as deezer from "../functions/deezer";
+import * as deezer from "../functions/itunes";
 
 interface IModalContext {
   openModal: Function;
@@ -137,6 +137,7 @@ const ModalContextProvider = (props: any) => {
                     disableElevation={true}
                     ref={submitBtnRef}
                     onClick={async () => {
+                      setSources([]);
                       setWelcomeMessage("Hm, nothing found :(");
                       setLoadingResults(true);
                       deezer.getImagesFromInput(input, onImagesReturned);

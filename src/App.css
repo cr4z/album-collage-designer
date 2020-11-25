@@ -65,8 +65,8 @@ header {
   margin-bottom: 1rem;
   display: inline-grid;
   grid-template-columns: repeat(var(--num-columns), auto);
-  width: 75vw;
-  height: calc((75vw / var(--num-columns)) * var(--num-rows));
+  width: 80vw;
+  height: calc((80vw / var(--num-columns)) * var(--num-rows));
 }
 
 .cell-item {
