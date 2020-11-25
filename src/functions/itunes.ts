@@ -10,8 +10,6 @@ export const getImagesFromInput = async (input: string, callback: Function) => {
 
   let json = await response.json();
 
-  console.log(json);
-
   const results = json.results;
 
   const sources: string[] = [];

@@ -186,3 +186,21 @@ header {
   transform: scale(1.1);
   cursor: pointer;
 }
+
+.tags-container {
+  margin: 1rem;
+}
+
+.tag {
+  background-color: lightskyblue;
+  border-radius: 0.5rem;
+  padding: 0.3rem;
+  margin: 0.2rem;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.tag-text {
+  margin-left: 0.3rem;
+  margin-right: 0.3rem;
+}

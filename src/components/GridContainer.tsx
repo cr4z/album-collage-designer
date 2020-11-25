@@ -9,7 +9,7 @@ import { ModalContext } from "../contexts/Modal";
 import { stripImages, waitForImagesToLoad } from "../functions/imgProcessing";
 import { generateCanvas } from "../functions/canvasGenerator";
 import { downloadCanvas } from "../functions/downloader";
-import { Button, CircularProgress, Grid, TextField } from "@material-ui/core";
+import { Button, CircularProgress, TextField } from "@material-ui/core";
 
 export function GridContainer() {
   const ctx = useContext(ModalContext);
@@ -62,7 +62,7 @@ export function GridContainer() {
         </div>
       </div>
 
-      <GridGen
+      <Grid
         onGridInitialized={onGridInitialized}
         gridValues={{ numColumns: numColumns, numRows: numRows }}
         gridState={{ gridIsLoading, setGridIsLoading }}
@@ -118,7 +118,7 @@ const downloadButtonHandler = async (
   setDownloadInProgress(false);
 };
 
-const GridGen = (props: {
+const Grid = (props: {
   gridValues: { numColumns: number; numRows: number };
   gridState: { gridIsLoading: any; setGridIsLoading: Function };
   onGridInitialized: Function;
@@ -128,10 +128,11 @@ const GridGen = (props: {
   const { numColumns, numRows } = props.gridValues;
   const total = numColumns * numRows;
 
-  const [images, setImages] = useState<HTMLImageElement[]>([]);
   const [cellItems, setCellItems] = useState<JSX.Element[]>([]);
 
   useEffect(() => {
+    //initialize grid; generate and assign CellItems
+
     gridState.setGridIsLoading(true);
 
     //generate new array of images
@@ -141,9 +142,6 @@ const GridGen = (props: {
       newImg.src = `https://picsum.photos/seed/${Math.random()}/1000`;
       newImages.push(newImg);
     }
-
-    //set images to new array
-    setImages(newImages);
 
     //init css
     setCssProps({ numColumns: numColumns, numRows: numRows });

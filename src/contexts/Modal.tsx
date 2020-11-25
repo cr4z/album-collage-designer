@@ -1,4 +1,10 @@
-import React, { createContext, useCallback, useRef, useState } from "react";
+import React, {
+  createContext,
+  MutableRefObject,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -8,10 +14,15 @@ import {
   ThemeProvider,
 } from "@material-ui/core";
 import { ModalTheme } from "../themes/modal";
-import * as deezer from "../functions/itunes";
+import * as iTunes from "../functions/itunes";
 
 interface IModalContext {
   openModal: Function;
+}
+
+interface ITagObject {
+  elem: JSX.Element;
+  label: string;
 }
 
 export const ModalContext = createContext<IModalContext | null>(null);
@@ -23,6 +34,9 @@ const ModalContextProvider = (props: any) => {
   const [loadingResults, setLoadingResults] = useState<boolean>(false);
   const [sources, setSources] = useState<string[]>([]);
   const [welcomeMessage, setWelcomeMessage] = useState<string>("");
+  const [tagObjects, setTagObjects] = useState<ITagObject[]>([]);
+  const tagObjectsRef = useRef(tagObjects);
+  tagObjectsRef.current = tagObjects;
 
   const onImagesReturned = useCallback((results: string[]) => {
     setSources(results);
@@ -70,6 +84,36 @@ const ModalContextProvider = (props: any) => {
     setPageInView(pageInView + 1);
   }, [pageInView]);
 
+  const addTag = useCallback((input: string) => {
+    let labels = tagObjectsRef.current.map((a) => a.label);
+
+    if (labels.includes(input)) return;
+    if (tagObjectsRef.current.length > 8) return;
+
+    const newElem = (
+      <Tag
+        label={input}
+        onTagSearch={(label: string) => onTagSearch(label)}
+        onTagDelete={(label: string) => onTagDelete(label)}
+      />
+    );
+
+    const newTag = { elem: newElem, label: input };
+    setTagObjects((old: any) => [...old, newTag]);
+  }, []);
+
+  const onTagSearch = useCallback((label: string) => {
+    iTunes.getImagesFromInput(label, onImagesReturned);
+    setPageInView(0);
+  }, []);
+
+  const onTagDelete = useCallback((label: string) => {
+    const filtered: ITagObject[] = tagObjectsRef.current.filter(
+      (tag) => label !== tag.label
+    );
+    setTagObjects(filtered);
+  }, []);
+
   return (
     <ModalContext.Provider value={{ ...ctx }}>
       {modalOpen && (
@@ -105,6 +149,10 @@ const ModalContextProvider = (props: any) => {
                   />
                 </div>
 
+                <div className="tags-container">
+                  {tagObjects.map((obj) => obj.elem)}
+                </div>
+
                 {sources.length > 0 ? (
                   <div className="modal-grid">{results}</div>
                 ) : loadingResults ? (
@@ -137,10 +185,11 @@ const ModalContextProvider = (props: any) => {
                     disableElevation={true}
                     ref={submitBtnRef}
                     onClick={async () => {
+                      addTag(input);
                       setSources([]);
                       setWelcomeMessage("Hm, nothing found :(");
                       setLoadingResults(true);
-                      deezer.getImagesFromInput(input, onImagesReturned);
+                      iTunes.getImagesFromInput(input, onImagesReturned);
                       setPageInView(0);
                     }}
                   >
@@ -156,6 +205,23 @@ const ModalContextProvider = (props: any) => {
     </ModalContext.Provider>
   );
 };
+
+function Tag(props: {
+  label: string;
+  onTagSearch: Function;
+  onTagDelete: Function;
+}) {
+  const { label, onTagSearch, onTagDelete } = props;
+
+  return (
+    <span className="tag">
+      <span className="tag-text" onClick={() => onTagSearch(label)}>
+        {label}{" "}
+      </span>
+      <span onClick={() => onTagDelete(label)}>❌</span>
+    </span>
+  );
+}
 
 function Result(props: { src: string; onImageSelected: Function }) {
   return (
