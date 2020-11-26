@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { ModalContext } from "../contexts/Modal";
-import { stripImages, waitForImagesToLoad } from "../functions/imgProcessing";
+import { waitForImagesToLoad } from "../functions/imgProcessing";
 import { generateCanvas } from "../functions/canvasGenerator";
 import { downloadCanvas } from "../functions/downloader";
 import { Button, CircularProgress, TextField } from "@material-ui/core";
@@ -15,10 +15,12 @@ export function GridContainer() {
   const ctx = useContext(ModalContext);
   if (!ctx) throw new Error("Context not received!");
 
-  const [numColumns, setNumColumns] = useState<number>(10);
-  const [numRows, setNumRows] = useState<number>(5);
-  const [gridIsLoading, setGridIsLoading] = useState<boolean>(false);
+  const [inputNumColumns, setInputNumColumns] = useState<number>(5);
+  const [inputNumRows, setInputNumRows] = useState<number>(10);
+  const [officialNumColumns, setOfficialNumColumns] = useState<number>(5);
+  const [officialNumRows, setOfficialNumRows] = useState<number>(10);
 
+  const [gridIsLoading, setGridIsLoading] = useState<boolean>(false);
   const [downloadInProgress, setDownloadInProgress] = useState<boolean>(false);
 
   const [officialImages, setOfficialImages] = useState<HTMLImageElement[]>([]);
@@ -44,27 +46,46 @@ export function GridContainer() {
   return (
     <>
       <div className="grid-text-field-container">
-        <div className="text-field">
-          <TextField
-            label="Columns"
-            defaultValue="10"
-            variant="outlined"
-            onChange={(e) => setNumColumns(+e.target.value)}
-          />
+        <div className="input-fields-container">
+          <div className="text-field">
+            <TextField
+              label="Columns"
+              defaultValue="5"
+              variant="outlined"
+              onChange={(e) => setInputNumColumns(+e.target.value)}
+            />
+          </div>
+          <div className="text-field">
+            <TextField
+              label="Rows"
+              defaultValue="10"
+              variant="outlined"
+              onChange={(e) => setInputNumRows(+e.target.value)}
+            />
+          </div>
         </div>
-        <div className="text-field">
-          <TextField
-            label="Rows"
-            defaultValue="5"
-            variant="outlined"
-            onChange={(e) => setNumRows(+e.target.value)}
-          />
+        <div>
+          <Button
+            disabled={gridIsLoading || downloadInProgress}
+            size="large"
+            onClick={() => {
+              if (inputNumColumns * inputNumRows < 500) {
+                setOfficialNumColumns(inputNumColumns);
+                setOfficialNumRows(inputNumRows);
+              } else alert("Can't go over 500 total cells!");
+            }}
+          >
+            Set!
+          </Button>
         </div>
       </div>
 
       <Grid
         onGridInitialized={onGridInitialized}
-        gridValues={{ numColumns: numColumns, numRows: numRows }}
+        gridValues={{
+          numColumns: officialNumColumns,
+          numRows: officialNumRows,
+        }}
         gridState={{ gridIsLoading, setGridIsLoading }}
         onItemSet={(index: number, newSrc: string) => onItemSet(index, newSrc)}
       />
@@ -80,8 +101,8 @@ export function GridContainer() {
               downloadButtonHandler(
                 officialImages,
                 {
-                  numColumns: numColumns,
-                  numRows: numRows,
+                  numColumns: inputNumColumns,
+                  numRows: inputNumRows,
                 },
                 setDownloadInProgress
               );

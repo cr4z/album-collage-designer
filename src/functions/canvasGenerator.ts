@@ -1,4 +1,4 @@
-import { stripImages, waitForImagesToLoad } from "./imgProcessing";
+import { waitForImagesToLoad, stripImages } from "./imgProcessing";
 
 export const generateCanvas = async (
   images: HTMLImageElement[],

@@ -36,6 +36,10 @@ header {
   margin-left: -13rem;
 }
 
+.input-fields-container {
+  display: flex;
+}
+
 .modal-ex-btn {
   position: absolute;
   right: 0px;
