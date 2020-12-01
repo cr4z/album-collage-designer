@@ -1,19 +1,21 @@
-import { waitForImagesToLoad } from "./imgProcessing";
+import { waitForImagesToLoad, stripImages } from "./imgProcessing";
 
 export const generateCanvas = async (
   images: HTMLImageElement[],
   gridValues: { numColumns: number; numRows: number }
 ): Promise<HTMLCanvasElement> => {
+  images = stripImages(images);
+
+  images = await waitForImagesToLoad(images);
+
   const { numColumns, numRows } = gridValues;
 
   const numExtents = Math.max(numColumns, numRows);
-  const imageSize = 2000 / numExtents;
+  const imageSize = 3000 / numExtents;
   const canvas = document.createElement("canvas");
   canvas.width = imageSize * numColumns;
   canvas.height = imageSize * numRows;
   const ctx = canvas.getContext("2d");
-
-  await waitForImagesToLoad(images);
 
   if (ctx) {
     let total: number = -1;

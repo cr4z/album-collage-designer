@@ -1,62 +1,120 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ModalContext } from "../contexts/Modal";
-import { stripImages, waitForImagesToLoad } from "../functions/imgProcessing";
+import { setCssProps, waitForImagesToLoad } from "../functions/imgProcessing";
 import { generateCanvas } from "../functions/canvasGenerator";
 import { downloadCanvas } from "../functions/downloader";
-import { Button, TextField } from "@material-ui/core";
+import { Button, CircularProgress, TextField } from "@material-ui/core";
 
 export function GridContainer() {
   const ctx = useContext(ModalContext);
   if (!ctx) throw new Error("Context not received!");
 
-  const [numColumns, setNumColumns] = useState<number>(10);
-  const [numRows, setNumRows] = useState<number>(5);
+  const [inputNumColumns, setInputNumColumns] = useState<number>(5);
+  const [inputNumRows, setInputNumRows] = useState<number>(10);
+  const [officialNumColumns, setOfficialNumColumns] = useState<number>(5);
+  const [officialNumRows, setOfficialNumRows] = useState<number>(10);
+
   const [gridIsLoading, setGridIsLoading] = useState<boolean>(false);
+  const [downloadInProgress, setDownloadInProgress] = useState<boolean>(false);
 
   const [officialImages, setOfficialImages] = useState<HTMLImageElement[]>([]);
+  const officialImagesRef = useRef<HTMLImageElement[]>();
+  officialImagesRef.current = officialImages;
+
+  const onGridInitialized = useCallback((initialImages: HTMLImageElement[]) => {
+    setOfficialImages([...initialImages]);
+  }, []);
+
+  const onItemSet = useCallback((index: number, newSrc: string) => {
+    const old = officialImagesRef.current;
+
+    if (old) {
+      const newImages = [...old];
+      newImages[index].src = newSrc;
+
+      //set the official image
+      setOfficialImages(newImages);
+    } else throw new Error("Ref was not assigned!");
+  }, []);
 
   return (
     <>
-      <div className="grid-text-fields">
-        <span>
-          <TextField
-            label="Columns"
-            defaultValue="10"
-            variant="outlined"
-            onChange={(e) => setNumColumns(+e.target.value)}
-          />
-        </span>
-        <span>
-          <TextField
-            label="Rows"
-            defaultValue="5"
-            variant="outlined"
-            onChange={(e) => setNumRows(+e.target.value)}
-          />
-        </span>
+      <div className="grid-text-field-container">
+        <div className="input-fields-container">
+          <div className="text-field">
+            <TextField
+              label="Columns"
+              defaultValue="5"
+              variant="outlined"
+              onChange={(e) => setInputNumColumns(+e.target.value)}
+            />
+          </div>
+          <div className="text-field">
+            <TextField
+              label="Rows"
+              defaultValue="10"
+              variant="outlined"
+              onChange={(e) => setInputNumRows(+e.target.value)}
+            />
+          </div>
+        </div>
+        <div>
+          <Button
+            disabled={gridIsLoading || downloadInProgress}
+            size="large"
+            onClick={() => {
+              if (inputNumColumns * inputNumRows < 500) {
+                setOfficialNumColumns(inputNumColumns);
+                setOfficialNumRows(inputNumRows);
+              } else alert("Can't go over 500 total cells!");
+            }}
+          >
+            Set!
+          </Button>
+        </div>
       </div>
 
       <Grid
-        setOfficialImagesCb={setOfficialImages}
-        gridValues={{ numColumns: numColumns, numRows: numRows }}
+        onGridInitialized={onGridInitialized}
+        gridValues={{
+          numColumns: officialNumColumns,
+          numRows: officialNumRows,
+        }}
         gridState={{ gridIsLoading, setGridIsLoading }}
+        onItemSet={(index: number, newSrc: string) => onItemSet(index, newSrc)}
       />
 
       <br />
-      <div className="grid-download-btn">
-        <Button
-          color="primary"
-          size="large"
-          disabled={gridIsLoading}
-          onClick={() => {
-            downloadButtonHandler(officialImages, {
-              numColumns: numColumns,
-              numRows: numRows,
-            });
-          }}
-        >
-          Download!
-        </Button>
+      <div className="download-container">
+        <div>
+          <Button
+            color="primary"
+            size="large"
+            disabled={gridIsLoading || downloadInProgress}
+            onClick={() => {
+              downloadButtonHandler(
+                officialImages,
+                {
+                  numColumns: inputNumColumns,
+                  numRows: inputNumRows,
+                },
+                setDownloadInProgress
+              );
+            }}
+          >
+            Download!
+          </Button>
+        </div>
+
+        <div className="download-progress-spinner">
+          {downloadInProgress && <CircularProgress />}
+        </div>
       </div>
     </>
   );
@@ -64,12 +122,12 @@ export function GridContainer() {
 
 const downloadButtonHandler = async (
   images: HTMLImageElement[],
-  gridValues: { numColumns: number; numRows: number }
+  gridValues: { numColumns: number; numRows: number },
+  setDownloadInProgress: Function
 ) => {
-  const { numColumns, numRows } = gridValues;
+  setDownloadInProgress(true);
 
-  images = await waitForImagesToLoad(images);
-  images = stripImages(images);
+  const { numColumns, numRows } = gridValues;
 
   const canvas = await generateCanvas(images, {
     numColumns: numColumns,
@@ -77,78 +135,100 @@ const downloadButtonHandler = async (
   });
 
   downloadCanvas(canvas);
+
+  setDownloadInProgress(false);
 };
 
 const Grid = (props: {
   gridValues: { numColumns: number; numRows: number };
   gridState: { gridIsLoading: any; setGridIsLoading: Function };
-  setOfficialImagesCb: Function;
+  onGridInitialized: Function;
+  onItemSet: Function;
 }) => {
+  const { gridState } = props;
   const { numColumns, numRows } = props.gridValues;
   const total = numColumns * numRows;
 
-  const { gridIsLoading, setGridIsLoading } = props.gridState;
-
-  const [images] = useState<HTMLImageElement[]>([]);
-  const [cellItems] = useState<JSX.Element[]>([]);
+  const [cellItems, setCellItems] = useState<JSX.Element[]>([]);
 
   useEffect(() => {
-    setGridIsLoading(true);
+    //initialize grid; generate and assign CellItems
 
-    //generate array of images
-    images.length = 0;
+    gridState.setGridIsLoading(true);
+
+    //generate new array of images
+    const newImages: HTMLImageElement[] = [];
     for (let i = 0; i < total; i++) {
-      const img = new Image();
-      img.src = `https://picsum.photos/seed/${Math.random()}/1000`;
-      images.push(img);
+      const newImg = new Image();
+      newImg.src = `https://picsum.photos/seed/${Math.random()}/1000`;
+      newImages.push(newImg);
     }
 
     //init css
     setCssProps({ numColumns: numColumns, numRows: numRows });
 
     //wait for image array to load
-    waitForImagesToLoad(images).then(() => {
-      //generate array of cellitems
-      cellItems.length = 0;
-      images.forEach((image) => {
-        cellItems.push(<CellItem src={image.src} />);
+    waitForImagesToLoad(newImages).then(() => {
+      //generate new array of cellitems
+
+      const newCellItems: JSX.Element[] = [];
+      let i: number = -1;
+
+      newImages.forEach((image) => {
+        i++;
+
+        const newItem = (
+          <CellItem
+            initialSource={image.src}
+            index={i}
+            onItemSet={(index: number, newSrc: string) =>
+              props.onItemSet(index, newSrc)
+            }
+          />
+        );
+
+        newCellItems.push(newItem);
       });
 
+      setCellItems(newCellItems);
+
       //finally, set grid state to not loading
-      props.setOfficialImagesCb(images);
-      setGridIsLoading(false);
+      props.onGridInitialized(newImages);
+      gridState.setGridIsLoading(false);
     });
   }, [numColumns, numRows]);
 
-  return gridIsLoading ? (
-    <div>Loading...</div>
+  return gridState.gridIsLoading ? (
+    <CircularProgress color="secondary" style={{ margin: 100 }} />
   ) : (
     <div className="grid">{cellItems}</div>
   );
 };
 
-function CellItem(props: { src: string }) {
+function CellItem(props: {
+  initialSource: string;
+  index: number;
+  onItemSet: Function;
+}) {
   const context = useContext(ModalContext);
+
+  const [src, setSrc] = useState<string>(props.initialSource);
+
+  const onImageReceieved = useCallback((newSource: string) => {
+    setSrc(newSource);
+    props.onItemSet(props.index, newSource);
+  }, []);
+
   return (
     <img
       className="cell-item"
-      src={props.src}
+      src={src}
       alt="album cover"
       onClick={() => {
         if (context) {
-          context.openModal(receiveData);
-        } //error check this mf
+          context.openModal(() => onImageReceieved);
+        }
       }}
     ></img>
   );
-}
-
-const setCssProps = (gridValues: { numColumns: number; numRows: number }) => {
-  const css = document.documentElement.style;
-  const { numColumns, numRows } = gridValues;
-  css.setProperty("--num-columns", numColumns.toString());
-  css.setProperty("--num-rows", numRows.toString());
-};
-
-function receiveData() {
 }
