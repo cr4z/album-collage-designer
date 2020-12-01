@@ -1,9 +1,10 @@
 import React from "react";
-import { GridContainer } from "./components/GridContainer";
 import "./App.css";
 import ModalContextProvider from "./contexts/Modal";
 import { ThemeProvider } from "@material-ui/core";
 import { GlobalTheme } from "./themes/global";
+import { UserFetcher } from "./components/UserFetcher";
+//import { GridContainer } from "./components/GridContainer";
 
 function App() {
   return (
@@ -11,7 +12,8 @@ function App() {
       <ThemeProvider theme={GlobalTheme}>
         <ModalContextProvider>
           <header>🎨Album Collage Designer🖌️</header>
-          <GridContainer />
+          <UserFetcher />
+          {/*<GridContainer />*/}
         </ModalContextProvider>
       </ThemeProvider>
     </div>
