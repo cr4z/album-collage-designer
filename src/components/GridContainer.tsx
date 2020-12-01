@@ -72,7 +72,7 @@ export function GridContainer() {
               if (inputNumColumns * inputNumRows < 500) {
                 setOfficialNumColumns(inputNumColumns);
                 setOfficialNumRows(inputNumRows);
-              } else alert("Can't go over 500 total cells!");
+              } else alert("Slow your roll Picasso! We can't go over 500 total cells!");
             }}
           >
             Set!
