@@ -3,8 +3,6 @@
 :root {
   background-color: #282c34;
   color: white;
-  --num-columns: 0;
-  --num-rows: 0;
 }
 
 .App {
@@ -48,11 +46,6 @@ header {
   -webkit-transition: -webkit-transform 0.4s ease;
   transition: transform 0.4s ease;
 }
-.modal-ex-btn:hover {
-  -webkit-transform: rotate(180deg);
-  transform: rotate(180deg);
-  cursor: pointer;
-}
 
 .grid-text-field-container {
   display: flex;
@@ -64,13 +57,80 @@ header {
   width: 20vw;
 }
 
-.grid {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  display: inline-grid;
-  grid-template-columns: repeat(var(--num-columns), auto);
-  width: 80vw;
-  height: calc((80vw / var(--num-columns)) * var(--num-rows));
+@media screen and (max-width: 900px) {
+  .grid {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    display: inline-grid;
+    grid-template-columns: repeat(var(--num-columns), auto);
+    height: calc((100vw / var(--num-columns)) * var(--num-rows));
+  }
+
+  .modal-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  .modal-grid-result img {
+    display: flex;
+    display: block;
+    width: 100%;
+    height: 24.5vw;
+  }
+
+  .modal-ex-btn:hover {
+    cursor: pointer;
+  }
+
+  .cell-item:hover {
+    cursor: pointer;
+  }
+
+  .modal-grid-result:hover {
+    cursor: pointer;
+  }
+}
+@media screen and (min-width: 900px) {
+  .grid {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    display: inline-grid;
+    grid-template-columns: repeat(var(--num-columns), auto);
+    width: 80vw;
+    height: calc((80vw / var(--num-columns)) * var(--num-rows));
+  }
+
+  .modal-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .modal-grid-result img {
+    display: flex;
+    display: block;
+    width: 100%;
+    height: 12.25vw;
+  }
+
+  .modal-ex-btn:hover {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+    cursor: pointer;
+  }
+
+  .cell-item:hover {
+    z-index: 1;
+    transform: scale(1.1);
+    cursor: pointer;
+  }
+
+  .modal-grid-result:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+  }
 }
 
 .cell-item {
@@ -78,12 +138,6 @@ header {
   width: 100%;
   height: 100%;
   transition: all 0.2s ease-in-out;
-}
-
-.cell-item:hover {
-  z-index: 1;
-  transform: scale(1.1);
-  cursor: pointer;
 }
 
 .modal-backdrop {
@@ -153,42 +207,8 @@ header {
   margin-bottom: 1rem;
 }
 
-@media screen and (max-width: 900px) {
-  .modal-grid {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-  }
-  .modal-grid-result img {
-    display: flex;
-    display: block;
-    width: 100%;
-    height: 24.5vw;
-  }
-}
-
-@media screen and (min-width: 900px) {
-  .modal-grid {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(6, 1fr);
-  }
-  .modal-grid-result img {
-    display: flex;
-    display: block;
-    width: 100%;
-    height: 12.25vw;
-  }
-}
-
 .modal-grid-result {
   transition: all 0.2s ease;
-}
-
-.modal-grid-result:hover {
-  transform: scale(1.1);
-  cursor: pointer;
 }
 
 .tags-container {

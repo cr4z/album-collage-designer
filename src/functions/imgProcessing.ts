@@ -4,7 +4,7 @@ export const waitForImagesToLoad = async (
   const promises: Promise<any>[] = [];
   images.map(async (image: HTMLImageElement) => {
     promises.push(
-      new Promise((resolve) => {
+      new Promise<void>((resolve) => {
         if (image.complete) {
           if (!(image.naturalWidth === 0)) {
             if (!(image.naturalHeight === 0)) {
@@ -32,4 +32,11 @@ export const stripImages = (images: HTMLImageElement[]): HTMLImageElement[] => {
     return image;
   });
   return images;
+};
+
+export const setCssProps = (gridValues: { numColumns: number; numRows: number }) => {
+  const css = document.documentElement.style;
+  const { numColumns, numRows } = gridValues;
+  css.setProperty("--num-columns", numColumns.toString());
+  css.setProperty("--num-rows", numRows.toString());
 };

@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { ModalContext } from "../contexts/Modal";
-import { waitForImagesToLoad } from "../functions/imgProcessing";
+import { setCssProps, waitForImagesToLoad } from "../functions/imgProcessing";
 import { generateCanvas } from "../functions/canvasGenerator";
 import { downloadCanvas } from "../functions/downloader";
 import { Button, CircularProgress, TextField } from "@material-ui/core";
@@ -232,10 +232,3 @@ function CellItem(props: {
     ></img>
   );
 }
-
-const setCssProps = (gridValues: { numColumns: number; numRows: number }) => {
-  const css = document.documentElement.style;
-  const { numColumns, numRows } = gridValues;
-  css.setProperty("--num-columns", numColumns.toString());
-  css.setProperty("--num-rows", numRows.toString());
-};
