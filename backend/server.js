@@ -1,8 +1,8 @@
 const express = require("express");
 const generateCanvas = require("./logic/generateCanvas");
 const cors = require("cors");
-const fetch = require("node-fetch");
 //adds a layer to process requests, might be good for security?
+const fetch = require("node-fetch");
 
 //?
 require("dotenv").config();

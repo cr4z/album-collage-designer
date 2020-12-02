@@ -22,7 +22,9 @@ export function GridContainer() {
 
   const [inputNumColumns, setInputNumColumns] = useState<number>(_defaultCols);
   const [inputNumRows, setInputNumRows] = useState<number>(_defaultRows);
-  const [officialNumColumns, setOfficialNumColumns] = useState<number>(_defaultCols);
+  const [officialNumColumns, setOfficialNumColumns] = useState<number>(
+    _defaultCols
+  );
   const [officialNumRows, setOfficialNumRows] = useState<number>(_defaultRows);
 
   const [gridIsLoading, setGridIsLoading] = useState<boolean>(false);
@@ -74,6 +76,10 @@ export function GridContainer() {
             disabled={gridIsLoading || downloadInProgress}
             size="large"
             onClick={() => {
+              const allowed = window.confirm(
+                "This will reset your current images! Continue?"
+              );
+              if (!allowed) return;
               if (inputNumColumns * inputNumRows < 500) {
                 setOfficialNumColumns(inputNumColumns);
                 setOfficialNumRows(inputNumRows);

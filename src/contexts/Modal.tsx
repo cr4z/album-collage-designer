@@ -87,7 +87,7 @@ const ModalContextProvider = (props: any) => {
     let labels = tagObjectsRef.current.map((a) => a.label);
 
     if (labels.includes(input)) return;
-    if (tagObjectsRef.current.length > 5) return;
+    if (tagObjectsRef.current.length > 4) return;
     if (input.length > 30) return;
 
     const newElem = (

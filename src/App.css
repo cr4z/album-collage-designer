@@ -8,6 +8,7 @@
 .App {
   text-align: center;
   font-family: "Noto Sans", sans-serif;
+  margin-bottom: 3rem;
 }
 
 header {
@@ -16,7 +17,7 @@ header {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: 1.4rem;
 }
 
 .App-link {
@@ -31,7 +32,6 @@ header {
 
 .download-progress-spinner {
   position: absolute;
-  margin-left: -13rem;
 }
 
 .input-fields-container {
@@ -50,81 +50,52 @@ header {
 .grid-text-field-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
+  align-items: center;
+  margin-left: 2rem;
+  margin-right: 2rem;
 }
 
 .text-field {
-  width: 20vw;
+  margin: .4rem;
 }
 
 .grid {
+  border: double white;
   margin-top: 1rem;
   margin-bottom: 1rem;
   display: inline-grid;
-  --cell-size: min(calc(100vw / var(--num-columns)), calc(100vh / var(--num-rows)));
+  --cell-size: min(
+    calc(85vw / var(--num-columns)),
+    calc(85vh / var(--num-rows))
+  );
   grid-template-columns: repeat(var(--num-columns), var(--cell-size));
   grid-template-rows: repeat(var(--num-rows), var(--cell-size));
 }
 
-@media screen and (max-width: 900px) {
-  .modal-grid {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-  }
-
-  .modal-grid-result img {
-    display: flex;
-    display: block;
-    width: 100%;
-    height: 24.5vw;
-  }
-
-  .modal-ex-btn:hover {
-    cursor: pointer;
-  }
-
-  .cell-item:hover {
-    cursor: pointer;
-  }
-
-  .modal-grid-result:hover {
-    cursor: pointer;
-  }
+.modal-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  justify-content: center;
 }
 
-@media screen and (min-width: 900px) {
+.modal-grid-result img {
+  width: min(24vw, 20vh);
+  height: min(24vw, 20vh);
+}
 
-  .modal-grid {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(6, 1fr);
-  }
+.modal-ex-btn:hover {
+  cursor: pointer;
+}
 
-  .modal-grid-result img {
-    display: flex;
-    display: block;
-    width: 100%;
-    height: 12.25vw;
-  }
+.cell-item:hover {
+  cursor: pointer;
+}
 
-  .modal-ex-btn:hover {
-    -webkit-transform: rotate(180deg);
-    transform: rotate(180deg);
-    cursor: pointer;
-  }
-
-  .cell-item:hover {
-    z-index: 1;
-    transform: scale(1.1);
-    cursor: pointer;
-  }
-
-  .modal-grid-result:hover {
-    transform: scale(1.1);
-    cursor: pointer;
-  }
+.modal-grid-result:hover {
+  cursor: pointer;
 }
 
 .cell-item {
@@ -152,7 +123,8 @@ header {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 80vw;
+  min-width: 45vh; /*something to keep it consistent across devices*/
+  width: auto;
   height: auto;
   overflow: hidden;
 
