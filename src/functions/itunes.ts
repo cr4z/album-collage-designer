@@ -1,14 +1,21 @@
 export const getImagesFromInput = async (input: string, callback: Function) => {
   const encodedInput = encodeURIComponent(input).replace(/%20/g, "+");
+  fetch("/log/--------");
+  fetch("/log/1");
 
-  let response = await fetch(
-    `https://itunes.apple.com/search?term=${encodedInput}&entity=album&media=music`,
-    {
-      method: "GET",
-    }
+  const encodedReq = encodeURIComponent(
+    `https://itunes.apple.com/search?term=${encodedInput}&entity=album&media=music`
   );
 
-  let json = await response.json();
+  const response = await fetch(`/proxy/${encodedReq}`, {
+    method: "GET",
+  });
+
+  fetch("/log/2");
+
+  const json = await response.json();
+
+  fetch("/log/3");
 
   const results = json.results;
 
@@ -18,6 +25,8 @@ export const getImagesFromInput = async (input: string, callback: Function) => {
     imgSrc = imgSrc.replace(/100x100/g, "200x200");
     if (!sources.includes(imgSrc)) sources.push(imgSrc);
   });
+
+  fetch("/log/4");
 
   callback(sources);
 };

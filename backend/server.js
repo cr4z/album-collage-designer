@@ -1,5 +1,8 @@
 const express = require("express");
 const generateCanvas = require("./logic/generateCanvas");
+const cors = require("cors");
+const fetch = require("node-fetch");
+//adds a layer to process requests, might be good for security?
 
 //?
 require("dotenv").config();
@@ -10,8 +13,8 @@ const port = 3001;
 //?
 app.use(express.json());
 
-app.get("/test", (req, res) => {
-  res.json("hello");
+app.get("/log/:msg", (req, res) => {
+  console.log(req.params.msg);
 });
 
 app.get("/generateCanvas/:columns/:rows/:encodedJson", async (req, res) => {
@@ -28,7 +31,23 @@ app.get("/generateCanvas/:columns/:rows/:encodedJson", async (req, res) => {
 
   const url = canvas.toDataURL();
 
-  res.json(url);
+  res.json(url); //write streams response
+  console.log("served url!");
+});
+
+app.get("/proxy/:request", async (req, res) => {
+  console.log("proxy request made!");
+
+  const encodedRequest = req.params.request;
+  const unencryptedRequest = decodeURIComponent(encodedRequest);
+  const result = await fetch(unencryptedRequest, {
+    method: "GET",
+  });
+
+  const json = await result.json();
+
+  res.json(json);
+  console.log("served proxy result!");
 });
 
 app.listen(port, () => {
