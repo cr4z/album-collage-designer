@@ -36,8 +36,6 @@ app.get("/generateCanvas/:columns/:rows/:encodedJson", async (req, res) => {
 });
 
 app.get("/proxy/:request", async (req, res) => {
-  console.log("proxy request made!");
-
   const encodedRequest = req.params.request;
   const unencryptedRequest = decodeURIComponent(encodedRequest);
   const result = await fetch(unencryptedRequest, {
@@ -47,7 +45,6 @@ app.get("/proxy/:request", async (req, res) => {
   const json = await result.json();
 
   res.json(json);
-  console.log("served proxy result!");
 });
 
 app.listen(port, () => {

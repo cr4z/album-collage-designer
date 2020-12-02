@@ -57,15 +57,16 @@ header {
   width: 20vw;
 }
 
-@media screen and (max-width: 900px) {
-  .grid {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    display: inline-grid;
-    grid-template-columns: repeat(var(--num-columns), auto);
-    height: calc((100vw / var(--num-columns)) * var(--num-rows));
-  }
+.grid {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  display: inline-grid;
+  --cell-size: min(calc(100vw / var(--num-columns)), calc(100vh / var(--num-rows)));
+  grid-template-columns: repeat(var(--num-columns), var(--cell-size));
+  grid-template-rows: repeat(var(--num-rows), var(--cell-size));
+}
 
+@media screen and (max-width: 900px) {
   .modal-grid {
     display: grid;
     gap: 10px;
@@ -92,15 +93,8 @@ header {
     cursor: pointer;
   }
 }
+
 @media screen and (min-width: 900px) {
-  .grid {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    display: inline-grid;
-    grid-template-columns: repeat(var(--num-columns), auto);
-    width: 80vw;
-    height: calc((80vw / var(--num-columns)) * var(--num-rows));
-  }
 
   .modal-grid {
     display: grid;

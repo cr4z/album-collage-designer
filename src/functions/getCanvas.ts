@@ -15,7 +15,5 @@ export const getCanvas = async (
       res = result;
     });
 
-  console.log("Received!");
-
   return res;
 };

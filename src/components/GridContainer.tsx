@@ -17,10 +17,13 @@ export function GridContainer() {
   const ctx = useContext(ModalContext);
   if (!ctx) throw new Error("Context not received!");
 
-  const [inputNumColumns, setInputNumColumns] = useState<number>(5);
-  const [inputNumRows, setInputNumRows] = useState<number>(10);
-  const [officialNumColumns, setOfficialNumColumns] = useState<number>(5);
-  const [officialNumRows, setOfficialNumRows] = useState<number>(10);
+  const _defaultCols = 4;
+  const _defaultRows = 8;
+
+  const [inputNumColumns, setInputNumColumns] = useState<number>(_defaultCols);
+  const [inputNumRows, setInputNumRows] = useState<number>(_defaultRows);
+  const [officialNumColumns, setOfficialNumColumns] = useState<number>(_defaultCols);
+  const [officialNumRows, setOfficialNumRows] = useState<number>(_defaultRows);
 
   const [gridIsLoading, setGridIsLoading] = useState<boolean>(false);
   const [downloadInProgress, setDownloadInProgress] = useState<boolean>(false);
@@ -52,7 +55,7 @@ export function GridContainer() {
           <div className="text-field">
             <TextField
               label="Columns"
-              defaultValue="5"
+              defaultValue={_defaultCols}
               variant="outlined"
               onChange={(e) => setInputNumColumns(+e.target.value)}
             />
@@ -60,7 +63,7 @@ export function GridContainer() {
           <div className="text-field">
             <TextField
               label="Rows"
-              defaultValue="10"
+              defaultValue={_defaultRows}
               variant="outlined"
               onChange={(e) => setInputNumRows(+e.target.value)}
             />

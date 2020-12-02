@@ -11,7 +11,7 @@ function App() {
     <div className="App">
       <ThemeProvider theme={GlobalTheme}>
         <ModalContextProvider>
-          <header>🎨Album Collage Designer🖌️</header>
+          <header>🎨 Album Collage Designer🖌️</header>
           <GridContainer />
         </ModalContextProvider>
       </ThemeProvider>
