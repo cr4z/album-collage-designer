@@ -6,10 +6,12 @@ import React, {
   useState,
 } from "react";
 import { ModalContext } from "../contexts/Modal";
-import { setCssProps, waitForImagesToLoad } from "../functions/imgProcessing";
-import { generateCanvas } from "../functions/canvasGenerator";
-import { downloadCanvas } from "../functions/downloader";
 import { Button, CircularProgress, TextField } from "@material-ui/core";
+
+import { setCssProps } from "../functions/setCssProps";
+import { waitForImagesToLoad } from "../functions/waitForImages";
+import { getCanvas } from "../functions/getCanvas";
+import { downloadImageFromURL } from "../functions/downloader";
 
 export function GridContainer() {
   const ctx = useContext(ModalContext);
@@ -72,7 +74,10 @@ export function GridContainer() {
               if (inputNumColumns * inputNumRows < 500) {
                 setOfficialNumColumns(inputNumColumns);
                 setOfficialNumRows(inputNumRows);
-              } else alert("Slow your roll Picasso! We can't go over 500 total cells!");
+              } else
+                alert(
+                  "Slow your roll Picasso! We can't go over 500 total cells!"
+                );
             }}
           >
             Set!
@@ -98,7 +103,7 @@ export function GridContainer() {
             size="large"
             disabled={gridIsLoading || downloadInProgress}
             onClick={() => {
-              downloadButtonHandler(
+              onDownloadButtonDown(
                 officialImages,
                 {
                   numColumns: inputNumColumns,
@@ -120,21 +125,21 @@ export function GridContainer() {
   );
 }
 
-const downloadButtonHandler = async (
+const onDownloadButtonDown = async (
   images: HTMLImageElement[],
   gridValues: { numColumns: number; numRows: number },
   setDownloadInProgress: Function
 ) => {
   setDownloadInProgress(true);
 
-  const { numColumns, numRows } = gridValues;
-
-  const canvas = await generateCanvas(images, {
-    numColumns: numColumns,
-    numRows: numRows,
+  const imageSources: string[] = images.map((img) => {
+    return img.src;
   });
 
-  downloadCanvas(canvas);
+  const url = await getCanvas(gridValues, imageSources);
+  console.log(url.length);
+
+  downloadImageFromURL(url);
 
   setDownloadInProgress(false);
 };

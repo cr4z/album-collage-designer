@@ -1,5 +1,4 @@
-export const downloadCanvas = (canvas: HTMLCanvasElement) => {
-  const url = canvas.toDataURL();
+export const downloadImageFromURL = (url: string) => {
   const link = document.createElement("a");
   link.href = url;
   link.download = "album-collage-designer.png";
