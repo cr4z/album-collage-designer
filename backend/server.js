@@ -3,15 +3,15 @@ const express = require("express");
 //const fetch = require("node-fetch");
 
 var app = express();
-var server = require('http').Server(app);
+var server = require("http").Server(app);
 server.listen(80);
 
 var port = process.env.PORT || 3000;
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/index.html');
+app.get("/", function (req, res) {
+  res.sendFile(__dirname + "/build/index.html");
 });
-app.listen(port, function() {
-  console.log("Node app is running at localhost:" + app.get('port'))
+app.listen(port, function () {
+  console.log("Node app is running at localhost:" + app.get("port"));
 });
 
 // //?
