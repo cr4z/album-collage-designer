@@ -1,17 +1,17 @@
-const express = require("express");
 const generateCanvas = require("./logic/generateCanvas");
 const fetch = require("node-fetch");
+const express = require("express");
 const path = require("path");
-
-//?
-require("dotenv").config();
-
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 5000;
 
 //?
 app.use(express.json());
+require("dotenv").config();
 
+app.use(express.static(path.join(__dirname, "build")));
+
+// This route serves the React app
 app.get("/", (req, res) =>
   res.sendFile(path.resolve(__dirname, "build", "index.html"))
 );
@@ -50,6 +50,4 @@ app.get("/proxy/:request", async (req, res) => {
   res.json(json);
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port: ${port}`);
-});
+app.listen(port, () => console.log(`Server listening on port ${port}`));
