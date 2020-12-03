@@ -1,52 +1,62 @@
 const express = require("express");
-const generateCanvas = require("./logic/generateCanvas");
-const cors = require("cors");
-//adds a layer to process requests, might be good for security?
-const fetch = require("node-fetch");
+//const generateCanvas = require("./logic/generateCanvas");
+//const fetch = require("node-fetch");
 
-//?
-require("dotenv").config();
+var app = express();
+var server = require('http').Server(app);
+server.listen(80);
 
-const app = express();
-const port = 3001;
-
-//?
-app.use(express.json());
-
-app.get("/log/:msg", (req, res) => {
-  console.log(req.params.msg);
+var port = process.env.PORT || 3000;
+app.get('/', function (req, res) {
+  res.sendFile(__dirname + '/index.html');
+});
+app.listen(port, function() {
+  console.log("Node app is running at localhost:" + app.get('port'))
 });
 
-app.get("/generateCanvas/:columns/:rows/:encodedJson", async (req, res) => {
-  const columns = req.params.columns;
-  const rows = req.params.rows;
+// //?
+// require("dotenv").config();
 
-  const json = decodeURIComponent(req.params.encodedJson);
-  const imageSources = JSON.parse(json);
+// const app = express();
+// const port = 3001;
 
-  const canvas = await generateCanvas(imageSources, {
-    numColumns: columns,
-    numRows: rows,
-  });
+// //?
+// app.use(express.json());
 
-  const url = canvas.toDataURL();
+// app.get("/log/:msg", (req, res) => {
+//   console.log(req.params.msg);
+// });
 
-  res.json(url); //write streams response
-  console.log("served url!");
-});
+// app.get("/generateCanvas/:columns/:rows/:encodedJson", async (req, res) => {
+//   const columns = req.params.columns;
+//   const rows = req.params.rows;
 
-app.get("/proxy/:request", async (req, res) => {
-  const encodedRequest = req.params.request;
-  const unencryptedRequest = decodeURIComponent(encodedRequest);
-  const result = await fetch(unencryptedRequest, {
-    method: "GET",
-  });
+//   const json = decodeURIComponent(req.params.encodedJson);
+//   const imageSources = JSON.parse(json);
 
-  const json = await result.json();
+//   const canvas = await generateCanvas(imageSources, {
+//     numColumns: columns,
+//     numRows: rows,
+//   });
 
-  res.json(json);
-});
+//   const url = canvas.toDataURL();
 
-app.listen(port, () => {
-  console.log(`Server is running on port: ${port}`);
-});
+//   res.json(url); //write streams response
+//   console.log("served url!");
+// });
+
+// app.get("/proxy/:request", async (req, res) => {
+//   const encodedRequest = req.params.request;
+//   const unencryptedRequest = decodeURIComponent(encodedRequest);
+//   const result = await fetch(unencryptedRequest, {
+//     method: "GET",
+//   });
+
+//   const json = await result.json();
+
+//   res.json(json);
+// });
+
+// app.listen(port, () => {
+//   console.log(`Server is running on port: ${port}`);
+// });
