@@ -1,19 +1,22 @@
 const express = require("express");
-//const generateCanvas = require("./logic/generateCanvas");
-//const fetch = require("node-fetch");
 
 var app = express();
 var server = require("http").Server(app);
 server.listen(80);
 
-var port = process.env.PORT || 3000;
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/build/index.html");
-});
-app.listen(port, function () {
-  console.log("Node app is running at localhost:" + app.get("port"));
-});
+const path = require('path');
+app.use(express.static(path.join(__dirname, './client/build')))
 
+app.get('*', function(_, res) {
+  res.sendFile(path.join(__dirname, './client/build/index.html'), function(err) {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+})
+
+//const generateCanvas = require("./logic/generateCanvas");
+//const fetch = require("node-fetch");
 // //?
 // require("dotenv").config();
 
