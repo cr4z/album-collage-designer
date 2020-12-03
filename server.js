@@ -1,19 +1,7 @@
-const express = require("express");
-
+var express = require('express');
 var app = express();
-var server = require("http").Server(app);
-server.listen(80);
-
-const path = require('path');
-app.use(express.static(path.join(__dirname, './client/build')))
-
-app.get('*', function(_, res) {
-  res.sendFile(path.join(__dirname, './client/build/index.html'), function(err) {
-    if (err) {
-      res.status(500).send(err)
-    }
-  })
-})
+app.use(express.static(__dirname + '/'));
+app.listen(process.env.PORT || 8080);
 
 //const generateCanvas = require("./logic/generateCanvas");
 //const fetch = require("node-fetch");
